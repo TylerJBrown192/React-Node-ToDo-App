@@ -1,6 +1,7 @@
 var express = require('express');
 var bodyParser = require('body-parser');
 var MongoClient = require('mongodb').MongoClient;
+var assert = require('assert');
 var ObjectId = require('mongodb').ObjectID;
 
 var app = express();
@@ -38,23 +39,18 @@ app.get('/api/todos/:id', function(req, res) {
   });
 });
 
-app.put('/api/todos/:id', function(req, res) {
-  var todo = req.body;
-  console.log("Modifying todo:", req.params.id, todo);
-  var oid = ObjectId(req.params.id);
 
-  db.collection("todos").updateOne({_id: oid}, todo, function(err, result) {
-    db.collection("todos").find({_id: oid}).next(function(err, doc) {
-      res.send(doc);
+MongoClient.connect('mongodb://localhost:3000/todosdb', function(err, dbConnection) {
+    if (err) {
+        console.log(err);
+        return;
+    }
+
+    db = dbConnection;
+
+    //set as global variable
+    var server = app.listen(3000, function() {
+        var port = server.address().port;
+        console.log("Started server at port", port);
     });
-  });
-});
-
-MongoClient.connect('mongodb://localhost/todosdb', function(err, dbConnection) {
-  db = dbConnection;
-
-  var server = app.listen(3000, function() {
-	  var port = server.address().port;
-	  console.log("Started server at port", port);
-  });
 });

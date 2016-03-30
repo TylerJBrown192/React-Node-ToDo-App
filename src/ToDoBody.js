@@ -34,12 +34,10 @@ var ToDoBody = React.createClass({
         this.loadData();
     },
 
-
     loadData: function() {
-        var query = this.props.location.query || {};
-
-        $.ajax('/api/todos', {data: filter}).done(function(data) {
-        this.setState({todos: data});
+        //jquery ajax call instead of custom, because time constraints
+        $.ajax('/api/todos').done(function(data) {
+            this.setState({todos: data});
         }.bind(this));
     },
 
